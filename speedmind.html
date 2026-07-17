@@ -333,7 +333,7 @@ function addCard(){
 function renderCardList(){
   const el=document.getElementById('cardList')
   if(cards.length===0){el.innerHTML='<p class="empty">Sin tarjetas</p>';return}
-  el.innerHTML=cards.map(c=>\`<div class="list-item"><span>\${c.front}</span><button onclick="delCard(\${c.id})">🗑️</button></div>\`).join('')
+  el.innerHTML=cards.map(c=>'<div class="list-item"><span>'+c.front+'</span><button onclick="delCard('+c.id+')">🗑️</button></div>').join('')
 }
 function delCard(id){cards=cards.filter(c=>c.id!==id);saveCards();renderCardList();toast('Eliminada')}
 function saveCards(){LS.set('sm_cards',cards)}
@@ -355,7 +355,7 @@ function convertMajor(){
   const num=document.getElementById('majorNum').value.replace(/\D/g,'')
   if(!num){document.getElementById('majorResult').textContent='—';return}
   const sounds=num.split('').map(d=>majorMap[d]||'?').join(' · ')
-  document.getElementById('majorResult').innerHTML=\`<span style="color:var(--muted);font-size:.9rem">\${num}</span><br>\${sounds}\`
+  document.getElementById('majorResult').innerHTML='<span style="color:var(--muted);font-size:.9rem">'+num+'</span><br>'+sounds
 }
 
 // ===== DASHBOARD =====
@@ -370,7 +370,7 @@ function updateDash(){
   document.getElementById('dDue').textContent=due
   const hl=document.getElementById('historyList')
   if(profile.history.length===0){hl.innerHTML='<p class="empty">Sin sesiones aún</p>';return}
-  hl.innerHTML=profile.history.slice(-10).reverse().map(h=>\`<div class="list-item"><span>\${h.date}</span><span>\${h.count} reps · +\${h.xp} XP</span></div>\`).join('')
+  hl.innerHTML=profile.history.slice(-10).reverse().map(h=>'<div class="list-item"><span>'+h.date+'</span><span>'+h.count+' reps · +'+h.xp+' XP</span></div>').join('')
 }
 function exportAll(){
   const data={cards:cards,profile:profile,exportedAt:new Date().toISOString()}
@@ -380,8 +380,8 @@ function exportAll(){
 function importAll(input){
   const file=input.files[0];if(!file)return
   const reader=new FileReader()
-  reader.onload=e=>{try{const data=JSON.parse(e.target.result);if(data.cards){cards=data.cards;saveCards()}if(data.profile){profile=data.profile;saveProfile()}updateDash();toast('Datos restaurados')
-}catch(err){toast('Error al leer JSON')}}
+  reader.onload=e=>{try{const data=JSON.parse(e.target.result);if(data.cards){cards=data.cards;saveCards()}if(data.profile){profile=data.profile;saveProfile()}updateDash();toast('Datos restaurados')}
+catch(err){toast('Error al leer JSON')}}
   reader.readAsText(file)
   input.value=''
 }
