@@ -2,82 +2,102 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0d0d0d">
 <title>SpeedMind</title>
 <style>
+  :root{--bg:#0d0d0d;--card:#1a1a1a;--accent:#3b82f6;--text:#e5e5e5;--muted:#888;--success:#22c55e;--danger:#ef4444;--warn:#f59e0b;--border:#222;--input:#222}
+  .light{--bg:#f5f5f5;--card:#fff;--text:#1a1a1a;--muted:#666;--border:#ddd;--input:#eee}
   *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif}
-  :root{--bg:#0d0d0d;--card:#1a1a1a;--accent:#3b82f6;--text:#e5e5e5;--muted:#888;--success:#22c55e;--danger:#ef4444;--warn:#f59e0b}
-  body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
-  header{padding:1rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #222}
-  header h1{font-size:1.3rem;display:flex;align-items:center;gap:.5rem}
-  .badge{background:var(--accent);padding:.2rem .6rem;border-radius:999px;font-size:.75rem;font-weight:700}
-  .container{flex:1;padding:1rem;max-width:600px;width:100%;margin:0 auto}
-  .menu{display:grid;gap:.75rem;margin-top:1rem}
-  .menu-item{background:var(--card);border-radius:12px;padding:1rem;display:flex;align-items:center;gap:1rem;cursor:pointer;transition:.2s;border:1px solid #222}
-  .menu-item:hover{border-color:var(--accent)}
-  .menu-icon{font-size:1.5rem;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:#222;border-radius:10px}
-  .menu-text h3{font-size:1rem;margin-bottom:.15rem}
-  .menu-text p{font-size:.85rem;color:var(--muted)}
+  body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;transition:background .3s,color .3s}
+  header{padding:1rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);gap:.5rem;flex-wrap:wrap}
+  header h1{font-size:1.2rem;display:flex;align-items:center;gap:.4rem}
+  .badge{background:var(--accent);padding:.2rem .6rem;border-radius:999px;font-size:.7rem;font-weight:700;color:#fff}
+  .container{flex:1;padding:1rem;max-width:640px;width:100%;margin:0 auto;padding-bottom:3rem}
+  .menu{display:grid;gap:.6rem;margin-top:.5rem}
+  .menu-item{background:var(--card);border-radius:12px;padding:.9rem 1rem;display:flex;align-items:center;gap:.8rem;cursor:pointer;transition:.2s;border:1px solid var(--border)}
+  .menu-item:hover{border-color:var(--accent);transform:translateY(-1px)}
+  .menu-icon{font-size:1.4rem;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:var(--input);border-radius:10px}
+  .menu-text h3{font-size:.95rem;margin-bottom:.1rem}
+  .menu-text p{font-size:.8rem;color:var(--muted)}
   .screen{display:none}
-  .screen.active{display:block;animation:fade .3s}
-  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-  .btn{background:var(--accent);color:#fff;border:none;padding:.7rem 1.2rem;border-radius:8px;cursor:pointer;font-size:.95rem;font-weight:600;transition:.2s}
-  .btn:hover{opacity:.9}
-  .btn.secondary{background:#222;color:var(--text)}
+  .screen.active{display:block;animation:fade .25s}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .btn{background:var(--accent);color:#fff;border:none;padding:.65rem 1.1rem;border-radius:8px;cursor:pointer;font-size:.9rem;font-weight:600;transition:.2s}
+  .btn:hover{opacity:.9;transform:scale(1.02)}
+  .btn.secondary{background:var(--input);color:var(--text);border:1px solid var(--border)}
   .btn.danger{background:var(--danger)}
   .btn.success{background:var(--success)}
   .btn.warn{background:var(--warn);color:#000}
-  .btn-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem}
-  .card{background:var(--card);border-radius:12px;padding:1.2rem;border:1px solid #222;margin-top:1rem}
-  .flashcard{min-height:180px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:1.2rem;cursor:pointer;user-select:none;position:relative}
-  .flashcard .back{display:none;color:var(--muted);font-size:1rem;margin-top:.5rem}
+  .btn.small{padding:.4rem .7rem;font-size:.8rem}
+  .btn-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.8rem}
+  .card{background:var(--card);border-radius:12px;padding:1rem;border:1px solid var(--border);margin-top:.8rem}
+  .flashcard{min-height:160px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:1.15rem;cursor:pointer;user-select:none;flex-direction:column}
+  .flashcard .back{display:none;color:var(--muted);font-size:.95rem;margin-top:.4rem}
   .flashcard.flipped .front{display:none}
   .flashcard.flipped .back{display:block}
   .flashcard.flipped{background:#1e2a3a;border-color:var(--accent)}
-  .rating{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-top:1rem}
-  .rating button{padding:.6rem 0;border-radius:8px;border:none;cursor:pointer;font-weight:600;font-size:.8rem;color:#fff}
+  .light .flashcard.flipped{background:#dbeafe;border-color:var(--accent)}
+  .rating{display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-top:.8rem}
+  .rating button{padding:.5rem 0;border-radius:8px;border:none;cursor:pointer;font-weight:700;font-size:.75rem;color:#fff}
   .rating .again{background:var(--danger)}
   .rating .hard{background:var(--warn);color:#000}
   .rating .good{background:var(--accent)}
   .rating .easy{background:var(--success)}
-  input,textarea,select{background:#222;border:1px solid #333;color:var(--text);padding:.6rem;border-radius:8px;width:100%;font-size:.9rem;margin-top:.4rem}
-  label{font-size:.85rem;color:var(--muted);display:block;margin-top:.8rem}
-  .tabs{display:flex;gap:.5rem;margin-bottom:1rem;border-bottom:1px solid #222;padding-bottom:.5rem}
-  .tab{cursor:pointer;padding:.4rem .8rem;border-radius:6px;font-size:.85rem;color:var(--muted)}
-  .tab.active{background:#222;color:var(--text)}
-  .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;margin-top:1rem}
-  .stat{background:var(--card);padding:1rem;border-radius:10px;text-align:center;border:1px solid #222}
-  .stat-value{font-size:1.5rem;font-weight:700;color:var(--accent)}
-  .stat-label{font-size:.75rem;color:var(--muted);margin-top:.2rem}
-  .list-item{background:var(--card);padding:.8rem;border-radius:8px;margin-top:.5rem;display:flex;justify-content:space-between;align-items:center;border:1px solid #222}
-  .list-item button{background:none;border:none;color:var(--danger);cursor:pointer;font-size:1rem}
-  .empty{text-align:center;color:var(--muted);padding:2rem}
-  .back-btn{background:none;border:none;color:var(--accent);cursor:pointer;font-size:.9rem;display:flex;align-items:center;gap:.3rem;margin-bottom:1rem}
-  .progress-bar{height:6px;background:#222;border-radius:3px;overflow:hidden;margin-top:.5rem}
-  .progress-bar>div{height:100%;background:var(--accent);transition:width .3s}
-  .toast{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid #333;padding:.8rem 1.2rem;border-radius:8px;font-size:.9rem;z-index:100;opacity:0;transition:.3s;pointer-events:none}
-  .toast.show{opacity:1}
-  .level-badge{background:linear-gradient(135deg,var(--accent),#8b5cf6);padding:.3rem .8rem;border-radius:999px;font-size:.8rem;font-weight:700}
-  .xp-bar{flex:1;height:8px;background:#222;border-radius:4px;overflow:hidden;margin:0 .5rem}
+  input,textarea,select{background:var(--input);border:1px solid var(--border);color:var(--text);padding:.55rem;border-radius:8px;width:100%;font-size:.9rem;margin-top:.3rem}
+  label{font-size:.82rem;color:var(--muted);display:block;margin-top:.7rem}
+  .tabs{display:flex;gap:.3rem;margin-bottom:.8rem;border-bottom:1px solid var(--border);padding-bottom:.4rem;overflow-x:auto}
+  .tab{cursor:pointer;padding:.35rem .7rem;border-radius:6px;font-size:.82rem;color:var(--muted);white-space:nowrap}
+  .tab.active{background:var(--input);color:var(--text)}
+  .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-top:.8rem}
+  .stat{background:var(--card);padding:.8rem .4rem;border-radius:10px;text-align:center;border:1px solid var(--border)}
+  .stat-value{font-size:1.3rem;font-weight:700;color:var(--accent)}
+  .stat-label{font-size:.7rem;color:var(--muted);margin-top:.15rem}
+  .list-item{background:var(--card);padding:.7rem;border-radius:8px;margin-top:.4rem;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);font-size:.9rem}
+  .list-item button{background:none;border:none;color:var(--danger);cursor:pointer;font-size:1.1rem}
+  .empty{text-align:center;color:var(--muted);padding:2rem;font-size:.9rem}
+  .back-btn{background:none;border:none;color:var(--accent);cursor:pointer;font-size:.9rem;display:flex;align-items:center;gap:.3rem;margin-bottom:.8rem}
+  .xp-bar{flex:1;height:6px;background:var(--input);border-radius:3px;overflow:hidden;margin:0 .4rem;max-width:120px}
   .xp-bar>div{height:100%;background:linear-gradient(90deg,var(--accent),#8b5cf6);transition:width .3s}
-  .top-bar{display:flex;align-items:center;gap:.5rem;margin-bottom:1rem}
-  .hidden{display:none!important}
-  .major-table{display:grid;grid-template-columns:repeat(5,1fr);gap:.4rem;margin-top:1rem}
-  .major-cell{background:var(--card);padding:.5rem;text-align:center;border-radius:6px;font-size:.85rem;border:1px solid #222}
-  .major-cell .num{color:var(--accent);font-weight:700}
-  .major-input{font-size:1.2rem;text-align:center;letter-spacing:.2rem}
-  .result-box{background:#222;padding:1rem;border-radius:8px;margin-top:1rem;font-size:1.1rem;text-align:center;min-height:3rem;display:flex;align-items:center;justify-content:center}
-  .streak{color:var(--warn);display:flex;align-items:center;gap:.3rem}
-  #fileInput{display:none}
+  .toast{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);padding:.7rem 1rem;border-radius:8px;font-size:.9rem;z-index:100;opacity:0;transition:.3s;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+  .toast.show{opacity:1}
+  #fileInput,#fileInput2,#fileInput3{display:none}
+  .header-right{display:flex;align-items:center;gap:.5rem;font-size:.8rem}
+  .streak{color:var(--warn);display:flex;align-items:center;gap:.2rem}
+  .theme-btn{background:none;border:1px solid var(--border);color:var(--text);padding:.3rem .6rem;border-radius:6px;cursor:pointer;font-size:1rem}
+  /* RSVP */
+  .rsvp-display{min-height:120px;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;text-align:center;letter-spacing:.05em}
+  .rsvp-controls{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:.8rem}
+  .rsvp-controls label{margin:0;font-size:.8rem}
+  .rsvp-controls input[type=range]{flex:1;min-width:80px;margin:0}
+  .chunk-size{font-size:.8rem;color:var(--muted);min-width:24px;text-align:center}
+  .rsvp-stats{display:flex;gap:1rem;margin-top:.5rem;font-size:.8rem;color:var(--muted)}
+  /* Memory Palace */
+  .room-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.5rem;margin-top:.8rem}
+  .room{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.7rem;text-align:center;cursor:pointer;transition:.2s;position:relative}
+  .room:hover{border-color:var(--accent)}
+  .room .room-name{font-weight:600;font-size:.85rem;margin-bottom:.3rem}
+  .room .room-items{font-size:.75rem;color:var(--muted);min-height:1.2rem}
+  .room .room-num{position:absolute;top:4px;left:6px;font-size:.65rem;color:var(--muted)}
+  /* Competition */
+  .comp-timer{font-size:3rem;font-weight:700;text-align:center;font-variant-numeric:tabular-nums;color:var(--accent);margin:1rem 0}
+  .comp-bar{height:10px;background:var(--input);border-radius:5px;overflow:hidden;margin:.5rem 0}
+  .comp-bar>div{height:100%;background:linear-gradient(90deg,var(--success),var(--accent));transition:width .3s}
+  .comp-score{text-align:center;font-size:1.2rem;margin-top:.5rem}
+  /* Mute */
+  .mute-btn{background:none;border:none;color:var(--text);font-size:1.1rem;cursor:pointer;opacity:.7}
+  .mute-btn:hover{opacity:1}
 </style>
 </head>
 <body>
 <header>
   <h1>🧠 SpeedMind <span class="badge" id="levelBadge">Nivel 1</span></h1>
-  <div style="display:flex;align-items:center;gap:.5rem;font-size:.85rem">
+  <div class="header-right">
+    <button class="theme-btn" onclick="toggleTheme()" title="Cambiar tema">🌙</button>
+    <button class="mute-btn" onclick="toggleMute()" id="muteBtn" title="Silenciar">🔊</button>
     <span class="streak">🔥 <span id="streakVal">0</span></span>
     <div class="xp-bar"><div id="xpFill" style="width:0%"></div></div>
-    <span id="xpText">0/100 XP</span>
+    <span id="xpText" style="font-size:.75rem">0/100</span>
   </div>
 </header>
 
@@ -85,21 +105,99 @@
   <!-- HOME -->
   <div id="homeScreen" class="screen active">
     <div class="menu">
-      <div class="menu-item" onclick="go('flash')">
-        <div class="menu-icon">🎴</div>
-        <div class="menu-text"><h3>Flashcards SM-2</h3><p>Algoritmo real de repetición espaciada</p></div>
+      <div class="menu-item" onclick="go('rsvp')"><div class="menu-icon">📖</div><div class="menu-text"><h3>Lector RSVP</h3><p>Lectura veloz con chunking y stats</p></div></div>
+      <div class="menu-item" onclick="go('palace')"><div class="menu-icon">🏛️</div><div class="menu-text"><h3>Palacio de Memoria</h3><p>5 habitaciones, editable, modo repaso</p></div></div>
+      <div class="menu-item" onclick="go('flash')"><div class="menu-icon">🎴</div><div class="menu-text"><h3>Flashcards SM-2</h3><p>Algoritmo real de repetición espaciada</p></div></div>
+      <div class="menu-item" onclick="go('major')"><div class="menu-icon">🔢</div><div class="menu-text"><h3>Major System</h3><p>Convertidor número → mnemotécnica</p></div></div>
+      <div class="menu-item" onclick="go('compete')"><div class="menu-icon">🏁</div><div class="menu-text"><h3>Modo Competencia</h3><p>Carrera contra tu récord. ¡Doble XP!</p></div></div>
+      <div class="menu-item" onclick="go('dash')"><div class="menu-icon">📊</div><div class="menu-text"><h3>Dashboard</h3><p>XP, niveles, rachas, historial, importar JSON</p></div></div>
+      <div class="menu-item" onclick="go('about')"><div class="menu-icon">💾</div><div class="menu-text"><h3>100% offline</h3><p>Todo en localStorage. Sin costo. PWA.</p></div></div>
+    </div>
+  </div>
+
+  <!-- RSVP READER -->
+  <div id="rsvpScreen" class="screen">
+    <button class="back-btn" onclick="go('home');stopRSVP()">← Volver</button>
+    <h2>📖 Lector RSVP</h2>
+    <div class="tabs">
+      <div class="tab active" onclick="switchRSVPTab('read')">Leer</div>
+      <div class="tab" onclick="switchRSVPTab('text')">Texto</div>
+      <div class="tab" onclick="switchRSVPTab('stats')">Stats</div>
+    </div>
+    <div id="rsvpReadTab">
+      <div class="card rsvp-display" id="rsvpWord">Listo</div>
+      <div class="rsvp-controls">
+        <button class="btn" onclick="toggleRSVP()" id="rsvpPlayBtn">▶️ Play</button>
+        <label>WPM</label>
+        <input type="range" id="rsvpWpm" min="100" max="800" value="300" oninput="updateRSVPSettings()">
+        <span id="rsvpWpmVal" style="min-width:36px;font-size:.85rem">300</span>
+        <label>Chunk</label>
+        <input type="range" id="rsvpChunk" min="1" max="5" value="1" oninput="updateRSVPSettings()">
+        <span class="chunk-size" id="rsvpChunkVal">1</span>
       </div>
-      <div class="menu-item" onclick="go('major')">
-        <div class="menu-icon">🔢</div>
-        <div class="menu-text"><h3>Major System</h3><p>Convertidor número → mnemotécnica</p></div>
+      <div class="rsvp-stats">
+        <span>Palabras: <b id="rsvpTotalWords">0</b></span>
+        <span>Tiempo: <b id="rsvpTime">0s</b></span>
+        <span>Vel. real: <b id="rsvpRealWpm">0</b> WPM</span>
       </div>
-      <div class="menu-item" onclick="go('dash')">
-        <div class="menu-icon">📊</div>
-        <div class="menu-text"><h3>Dashboard</h3><p>XP, niveles, rachas, historial, importar JSON</p></div>
+    </div>
+    <div id="rsvpTextTab" style="display:none">
+      <label>Pegá tu texto acá o cargá un archivo .txt</label>
+      <textarea id="rsvpText" rows="6" placeholder="Pegá texto para leer..."></textarea>
+      <div class="btn-row">
+        <button class="btn" onclick="loadRSVPText()">📖 Cargar texto</button>
+        <button class="btn secondary" onclick="document.getElementById('fileInput3').click()">📁 Cargar .txt</button>
+        <input type="file" id="fileInput3" accept=".txt" onchange="loadTxtFile(this)">
       </div>
-      <div class="menu-item" onclick="go('about')">
-        <div class="menu-icon">💾</div>
-        <div class="menu-text"><h3>100% offline</h3><p>Todo en localStorage. Sin costo.</p></div>
+    </div>
+    <div id="rsvpStatsTab" style="display:none">
+      <div class="stat-grid">
+        <div class="stat"><div class="stat-value" id="rsvpStatSessions">0</div><div class="stat-label">Sesiones</div></div>
+        <div class="stat"><div class="stat-value" id="rsvpStatWords">0</div><div class="stat-label">Palabras leídas</div></div>
+        <div class="stat"><div class="stat-value" id="rsvpStatTime">0</div><div class="stat-label">Minutos</div></div>
+        <div class="stat"><div class="stat-value" id="rsvpStatBest">0</div><div class="stat-label">Mejor WPM</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEMORY PALACE -->
+  <div id="palaceScreen" class="screen">
+    <button class="back-btn" onclick="go('home')">← Volver</button>
+    <h2>🏛️ Palacio de Memoria</h2>
+    <div class="tabs">
+      <div class="tab active" onclick="switchPalaceTab('rooms')">Habitaciones</div>
+      <div class="tab" onclick="switchPalaceTab('review')">Repaso</div>
+    </div>
+    <div id="palaceRoomsTab">
+      <div class="btn-row">
+        <button class="btn" onclick="addRoom()">➕ Agregar habitación</button>
+        <button class="btn secondary" onclick="resetPalace()">🔄 Reset default</button>
+      </div>
+      <div id="palaceGrid" class="room-grid"></div>
+    </div>
+    <div id="palaceReviewTab" style="display:none">
+      <div class="card" id="palaceReviewCard" style="text-align:center;min-height:140px;display:flex;align-items:center;justify-content:center;flex-direction:column">
+        <div id="palaceReviewQ" style="font-size:1.1rem">Tocá "Empezar" para repasar</div>
+        <div id="palaceReviewA" style="color:var(--muted);margin-top:.5rem;display:none"></div>
+      </div>
+      <div class="btn-row" style="justify-content:center">
+        <button class="btn" onclick="startPalaceReview()">▶️ Empezar</button>
+        <button class="btn secondary" onclick="showPalaceAnswer()">👁️ Ver respuesta</button>
+        <button class="btn success" onclick="palaceCorrect()">✅ Acerté</button>
+        <button class="btn danger" onclick="palaceWrong()">❌ Fallé</button>
+      </div>
+    </div>
+    <!-- Room editor modal (inline) -->
+    <div id="roomEditor" class="card" style="display:none;margin-top:1rem">
+      <h3 id="roomEditorTitle">Editar habitación</h3>
+      <label>Nombre</label>
+      <input id="roomName" placeholder="Ej: Cocina">
+      <label>Objetos (uno por línea)</label>
+      <textarea id="roomItems" rows="4" placeholder="- Sartén&#10;- Heladera&#10;- Mesa"></textarea>
+      <div class="btn-row">
+        <button class="btn" onclick="saveRoom()">💾 Guardar</button>
+        <button class="btn secondary" onclick="closeRoomEditor()">Cancelar</button>
+        <button class="btn danger" onclick="deleteRoom()">🗑️ Borrar</button>
       </div>
     </div>
   </div>
@@ -112,21 +210,19 @@
       <div class="tab" onclick="switchTab('manage')">Gestionar</div>
     </div>
     <div id="studyTab">
-      <div id="studyArea">
-        <div class="card flashcard" id="fcard" onclick="flipCard()">
-          <div class="front" id="fcFront">No hay tarjetas para repasar</div>
-          <div class="back" id="fcBack"></div>
-        </div>
-        <div class="rating" id="ratingBox" style="display:none">
-          <button class="again" onclick="rate(0)">Otra vez<br><small>&lt;1m</small></button>
-          <button class="hard" onclick="rate(3)">Difícil<br><small>2d</small></button>
-          <button class="good" onclick="rate(4)">Bien<br><small>4d</small></button>
-          <button class="easy" onclick="rate(5)">Fácil<br><small>7d</small></button>
-        </div>
-        <div id="studyEmpty" class="empty" style="display:none">
-          <p>🎉 ¡No hay tarjetas pendientes!</p>
-          <button class="btn" onclick="switchTab('manage')" style="margin-top:1rem">Agregar tarjetas</button>
-        </div>
+      <div class="card flashcard" id="fcard" onclick="flipCard()">
+        <div class="front" id="fcFront">No hay tarjetas para repasar</div>
+        <div class="back" id="fcBack"></div>
+      </div>
+      <div class="rating" id="ratingBox" style="display:none">
+        <button class="again" onclick="rate(0)">Otra vez<br><small>&lt;1m</small></button>
+        <button class="hard" onclick="rate(3)">Difícil<br><small>2d</small></button>
+        <button class="good" onclick="rate(4)">Bien<br><small>4d</small></button>
+        <button class="easy" onclick="rate(5)">Fácil<br><small>7d</small></button>
+      </div>
+      <div id="studyEmpty" class="empty" style="display:none">
+        <p>🎉 ¡No hay tarjetas pendientes!</p>
+        <button class="btn" onclick="switchTab('manage')" style="margin-top:1rem">Agregar tarjetas</button>
       </div>
     </div>
     <div id="manageTab" style="display:none">
@@ -147,46 +243,67 @@
   <!-- MAJOR SYSTEM -->
   <div id="majorScreen" class="screen">
     <button class="back-btn" onclick="go('home')">← Volver</button>
-    <h2 style="margin-bottom:.5rem">🔢 Major System</h2>
-    <p style="color:var(--muted);font-size:.9rem">Convertí números en palabras mnemotécnicas</p>
-    <div class="major-table">
-      <div class="major-cell"><span class="num">0</span><br>s,z</div>
-      <div class="major-cell"><span class="num">1</span><br>t,d</div>
-      <div class="major-cell"><span class="num">2</span><br>n</div>
-      <div class="major-cell"><span class="num">3</span><br>m</div>
-      <div class="major-cell"><span class="num">4</span><br>r</div>
-      <div class="major-cell"><span class="num">5</span><br>l</div>
-      <div class="major-cell"><span class="num">6</span><br>j,ch,sh</div>
-      <div class="major-cell"><span class="num">7</span><br>k,g</div>
-      <div class="major-cell"><span class="num">8</span><br>f,v</div>
-      <div class="major-cell"><span class="num">9</span><br>p,b</div>
+    <h2>🔢 Major System</h2>
+    <div class="major-table" style="display:grid;grid-template-columns:repeat(5,1fr);gap:.4rem;margin-top:.8rem">
+      <div class="room" style="cursor:default"><span style="color:var(--accent);font-weight:700">0</span><br>s,z</div>
+      <div class="room" style="cursor:default"><span style="color:var(--accent);font-weight:700">1</span><br>t,d</div>
+      <div class="room" style="cursor:default"><span style="color:var(--accent);font-weight:700">2</span><br>n</div>
+      <div class="room" style="cursor:default"><span style="color:var(--accent);font-weight:700">3</span><br>m</div>
+      <div class="room" style="cursor:default"><span style="color:var(--accent);font-weight:700">4</span><br>r</div>
+      <div class="room" style="cursor:default"><span style="color:var(--accent);font-weight:700">5</span><br>l</div>
+      <div class="room" style="cursor:default"><span style="color:var(--accent);font-weight:700">6</span><br>j,ch,sh</div>
+      <div class="room" style="cursor:default"><span style="color:var(--accent);font-weight:700">7</span><br>k,g</div>
+      <div class="room" style="cursor:default"><span style="color:var(--accent);font-weight:700">8</span><br>f,v</div>
+      <div class="room" style="cursor:default"><span style="color:var(--accent);font-weight:700">9</span><br>p,b</div>
     </div>
     <label style="margin-top:1rem">Ingresá un número</label>
-    <input id="majorNum" class="major-input" placeholder="314159" oninput="convertMajor()">
-    <div class="result-box" id="majorResult">—</div>
+    <input id="majorNum" style="font-size:1.2rem;text-align:center;letter-spacing:.2rem" placeholder="314159" oninput="convertMajor()">
+    <div class="card" style="text-align:center;font-size:1.1rem;min-height:3rem;display:flex;align-items:center;justify-content:center;margin-top:.8rem" id="majorResult">—</div>
+  </div>
+
+  <!-- COMPETITION -->
+  <div id="competeScreen" class="screen">
+    <button class="back-btn" onclick="go('home');stopCompetition()">← Volver</button>
+    <h2>🏁 Modo Competencia</h2>
+    <p style="color:var(--muted);font-size:.85rem">Carrera contra tu propio récord. ¡Doble XP si ganás!</p>
+    <div class="card" style="text-align:center">
+      <div style="font-size:.9rem;color:var(--muted)">Mejor tiempo</div>
+      <div style="font-size:1.5rem;font-weight:700;color:var(--accent)" id="compBest">--:--</div>
+      <div class="comp-timer" id="compTimer">00:00</div>
+      <div class="comp-bar"><div id="compBar" style="width:0%"></div></div>
+      <div class="comp-score" id="compScore">Tocá Empezar</div>
+      <div class="btn-row" style="justify-content:center;margin-top:1rem">
+        <button class="btn success" onclick="startCompetition()">▶️ Empezar</button>
+        <button class="btn danger" onclick="stopCompetition()">⏹️ Detener</button>
+      </div>
+    </div>
+    <div class="card" style="margin-top:.8rem">
+      <h3 style="font-size:.95rem;margin-bottom:.4rem">¿Cómo funciona?</h3>
+      <p style="color:var(--muted);font-size:.82rem;line-height:1.5">Se muestran 10 preguntas de Major System. Respondé lo más rápido posible. Si superás tu récord, ¡ganás doble XP!</p>
+    </div>
   </div>
 
   <!-- DASHBOARD -->
   <div id="dashScreen" class="screen">
     <button class="back-btn" onclick="go('home')">← Volver</button>
-    <h2 style="margin-bottom:.5rem">📊 Dashboard</h2>
+    <h2>📊 Dashboard</h2>
     <div class="stat-grid">
       <div class="stat"><div class="stat-value" id="dXP">0</div><div class="stat-label">XP Total</div></div>
       <div class="stat"><div class="stat-value" id="dLevel">1</div><div class="stat-label">Nivel</div></div>
-      <div class="stat"><div class="stat-value" id="dStreak">0</div><div class="stat-label">Racha (días)</div></div>
+      <div class="stat"><div class="stat-value" id="dStreak">0</div><div class="stat-label">Racha</div></div>
       <div class="stat"><div class="stat-value" id="dCards">0</div><div class="stat-label">Tarjetas</div></div>
-      <div class="stat"><div class="stat-value" id="dReviewed">0</div><div class="stat-label">Repasadas hoy</div></div>
+      <div class="stat"><div class="stat-value" id="dReviewed">0</div><div class="stat-label">Repasadas</div></div>
       <div class="stat"><div class="stat-value" id="dDue">0</div><div class="stat-label">Pendientes</div></div>
     </div>
-    <div class="card" style="margin-top:1rem">
-      <h3 style="margin-bottom:.5rem">Historial de sesiones</h3>
+    <div class="card" style="margin-top:.8rem">
+      <h3 style="font-size:.95rem;margin-bottom:.4rem">Historial</h3>
       <div id="historyList"><p class="empty">Sin sesiones aún</p></div>
     </div>
-    <div class="btn-row" style="margin-top:1rem">
-      <button class="btn secondary" onclick="exportAll()">💾 Exportar todo (JSON)</button>
-      <button class="btn secondary" onclick="document.getElementById('fileInput2').click()">📥 Importar todo (JSON)</button>
+    <div class="btn-row" style="margin-top:.8rem">
+      <button class="btn secondary" onclick="exportAll()">💾 Exportar todo</button>
+      <button class="btn secondary" onclick="document.getElementById('fileInput2').click()">📥 Importar todo</button>
       <input type="file" id="fileInput2" accept=".json" style="display:none" onchange="importAll(this)">
-      <button class="btn danger" onclick="resetData()">🗑️ Resetear todo</button>
+      <button class="btn danger" onclick="resetData()">🗑️ Resetear</button>
     </div>
   </div>
 
@@ -195,17 +312,15 @@
     <button class="back-btn" onclick="go('home')">← Volver</button>
     <div class="card" style="text-align:center">
       <h2>🧠 SpeedMind</h2>
-      <p style="color:var(--muted);margin-top:.5rem">100% offline. Todo se guarda en tu navegador mediante localStorage.</p>
-      <p style="color:var(--muted);font-size:.85rem;margin-top:.5rem">Sin servidores, sin cuentas, sin costo.</p>
-      <p style="color:var(--muted);font-size:.85rem;margin-top:.5rem">Algoritmo SM-2 para repetición espaciada.</p>
-      <p style="color:var(--muted);font-size:.85rem;margin-top:.5rem">Major System integrado.</p>
-      <div style="margin-top:1.5rem">
-        <p style="font-size:.9rem">Para subir a GitHub Pages:</p>
-        <ol style="text-align:left;color:var(--muted);font-size:.85rem;margin-top:.5rem;padding-left:1.2rem;line-height:1.6">
-          <li>Creá un repositorio en GitHub</li>
-          <li>Subí este archivo <code>speedmind.html</code></li>
-          <li>Andá a Settings → Pages → Branch: main → / (root)</li>
-          <li>Guardá y esperá 1 minuto. ¡Listo!</li>
+      <p style="color:var(--muted);margin-top:.5rem;font-size:.9rem">100% offline. PWA instalable. Todo en localStorage.</p>
+      <p style="color:var(--muted);font-size:.82rem;margin-top:.3rem">Sin servidores, sin cuentas, sin costo.</p>
+      <p style="color:var(--muted);font-size:.82rem;margin-top:.3rem">Incluye: RSVP, Palacio de Memoria, SM-2, Major System, Competencia.</p>
+      <div style="margin-top:1.2rem">
+        <p style="font-size:.85rem">Para instalar en tu celular:</p>
+        <ol style="text-align:left;color:var(--muted);font-size:.8rem;margin-top:.4rem;padding-left:1.2rem;line-height:1.5">
+          <li>Abrí la página en Chrome/Safari</li>
+          <li>Tocá el menú → "Agregar a pantalla de inicio"</li>
+          <li>¡Listo! Funciona como app nativa</li>
         </ol>
       </div>
     </div>
@@ -215,18 +330,49 @@
 <div class="toast" id="toast"></div>
 
 <script>
+// ===== AUDIO =====
+let muted=false;
+const AudioCtx=window.AudioContext||window.webkitAudioContext;
+let audioCtx=null;
+function ensureAudio(){if(!audioCtx)audioCtx=new AudioCtx();if(audioCtx.state==='suspended')audioCtx.resume();}
+function playTone(freq,type,dur,vol){
+  if(muted||!AudioCtx)return;ensureAudio();
+  const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+  o.type=type||'sine';o.frequency.value=freq;
+  g.gain.value=vol||0.05;g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+(dur||0.15));
+  o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+(dur||0.15));
+}
+function sfxClick(){playTone(800,'sine',0.08,0.03);}
+function sfxSuccess(){playTone(600,'sine',0.1,0.04);setTimeout(()=>playTone(900,'sine',0.15,0.04),100);}
+function sfxFail(){playTone(200,'sawtooth',0.2,0.03);}
+function sfxLevel(){playTone(440,'sine',0.1,0.04);setTimeout(()=>playTone(554,'sine',0.1,0.04),100);setTimeout(()=>playTone(659,'sine',0.2,0.05),200);}
+function toggleMute(){muted=!muted;document.getElementById('muteBtn').textContent=muted?'🔇':'🔊';}
+
+// ===== THEME =====
+function toggleTheme(){document.body.classList.toggle('light');localStorage.setItem('sm_theme',document.body.classList.contains('light')?'light':'dark');}
+if(localStorage.getItem('sm_theme')==='light')document.body.classList.add('light');
+
 // ===== DATA =====
 const LS={get:k=>JSON.parse(localStorage.getItem(k)||'null'),set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))}
 let cards=LS.get('sm_cards')||[]
-let profile=LS.get('sm_profile')||{xp:0,level:1,streak:0,lastStudyDate:null,studyDates:[],history:[]}
-let sessionReviews=0
-let currentCard=null
+let profile=LS.get('sm_profile')||{xp:0,level:1,streak:0,lastStudyDate:null,studyDates:[],history:[],bestCompTime:null}
+let rsvpStats=LS.get('sm_rsvpStats')||{sessions:0,words:0,minutes:0,bestWpm:0}
+let palace=LS.get('sm_palace')||defaultPalace()
+let sessionReviews=0,currentCard=null
+
+function defaultPalace(){
+  return [
+    {id:1,name:'Cocina',items:['Sartén','Heladera','Mesa','Lavaplatos','Ventana']},
+    {id:2,name:'Dormitorio',items:['Cama','Armario','Lámpara','Espejo','Almohada']},
+    {id:3,name:'Baño',items:['Ducha','Inodoro','Lavamanos','Espejo','Toalla']},
+    {id:4,name:'Sala',items:['Sofá','Televisor','Mesa ratona','Lámpara','Estante']},
+    {id:5,name:'Garage',items:['Auto','Bicicleta','Caja de herramientas','Escalera','Cubo']}
+  ]
+}
 
 // ===== INIT =====
 function init(){
-  updateProfileUI()
-  renderCardList()
-  updateDash()
+  updateProfileUI();renderCardList();updateDash();renderPalace();updateRSVPStatsUI();updateCompBest();
 }
 init()
 
@@ -234,17 +380,18 @@ init()
 function go(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'))
   document.getElementById(id+'Screen').classList.add('active')
-  if(id==='flash'){prepareStudy()}
-  if(id==='dash'){updateDash()}
+  if(id==='flash')prepareStudy()
+  if(id==='dash')updateDash()
+  if(id==='palace'){renderPalace();closeRoomEditor()}
 }
 
 // ===== PROFILE =====
-function addXP(n){
-  profile.xp+=n
-  const need=profile.level*100
-  if(profile.xp>=need){profile.xp-=need;profile.level++;toast('¡Subiste de nivel! 🎉')}
-  saveProfile()
-  updateProfileUI()
+function addXP(n,isDouble){
+  const gain=isDouble?n*2:n;
+  profile.xp+=gain;
+  const need=profile.level*100;
+  if(profile.xp>=need){profile.xp-=need;profile.level++;sfxLevel();toast('¡Subiste de nivel! 🎉');}
+  saveProfile();updateProfileUI();
 }
 function saveProfile(){LS.set('sm_profile',profile)}
 function updateProfileUI(){
@@ -253,7 +400,7 @@ function updateProfileUI(){
   const need=profile.level*100
   const pct=Math.min(100,(profile.xp/need)*100)
   document.getElementById('xpFill').style.width=pct+'%'
-  document.getElementById('xpText').textContent=profile.xp+'/'+need+' XP'
+  document.getElementById('xpText').textContent=profile.xp+'/'+need
 }
 function checkStreak(){
   const today=new Date().toDateString()
@@ -264,89 +411,184 @@ function checkStreak(){
   }
   profile.lastStudyDate=today
   if(!profile.studyDates.includes(today))profile.studyDates.push(today)
-  saveProfile()
-  updateProfileUI()
+  saveProfile();updateProfileUI()
 }
+
+// ===== RSVP =====
+let rsvpWords=[],rsvpIdx=0,rsvpTimer=null,rsvpRunning=false,rsvpStartTime=0;
+function switchRSVPTab(t){
+  document.querySelectorAll('#rsvpScreen .tab').forEach(x=>x.classList.remove('active'))
+  event.target.classList.add('active')
+  document.getElementById('rsvpReadTab').style.display=t==='read'?'block':'none'
+  document.getElementById('rsvpTextTab').style.display=t==='text'?'block':'none'
+  document.getElementById('rsvpStatsTab').style.display=t==='stats'?'block':'none'
+}
+function updateRSVPSettings(){
+  document.getElementById('rsvpWpmVal').textContent=document.getElementById('rsvpWpm').value
+  document.getElementById('rsvpChunkVal').textContent=document.getElementById('rsvpChunk').value
+}
+function loadRSVPText(){
+  const t=document.getElementById('rsvpText').value.trim()
+  if(!t){toast('Pegá un texto primero');return}
+  rsvpWords=t.split(/\s+/)
+  document.getElementById('rsvpTotalWords').textContent=rsvpWords.length
+  rsvpIdx=0
+  document.getElementById('rsvpWord').textContent='Listo ('+rsvpWords.length+' palabras)'
+  toast('Texto cargado')
+}
+function loadTxtFile(input){
+  const f=input.files[0];if(!f)return
+  const r=new FileReader()
+  r.onload=e=>{document.getElementById('rsvpText').value=e.target.result;loadRSVPText();input.value=''}
+  r.readAsText(f)
+}
+function toggleRSVP(){
+  if(rsvpRunning){stopRSVP();return}
+  if(rsvpWords.length===0){toast('Cargá un texto primero');return}
+  sfxClick();rsvpRunning=true;rsvpStartTime=Date.now()
+  document.getElementById('rsvpPlayBtn').textContent='⏸️ Pausa'
+  showNextWord()
+}
+function showNextWord(){
+  if(!rsvpRunning||rsvpIdx>=rsvpWords.length){finishRSVP();return}
+  const chunk=parseInt(document.getElementById('rsvpChunk').value)
+  const slice=rsvpWords.slice(rsvpIdx,rsvpIdx+chunk).join(' ')
+  document.getElementById('rsvpWord').textContent=slice
+  rsvpIdx+=chunk
+  const wpm=parseInt(document.getElementById('rsvpWpm').value)
+  const ms=Math.round(60000/wpm*chunk)
+  rsvpTimer=setTimeout(showNextWord,ms)
+}
+function stopRSVP(){
+  rsvpRunning=false;clearTimeout(rsvpTimer)
+  document.getElementById('rsvpPlayBtn').textContent='▶️ Play'
+}
+function finishRSVP(){
+  stopRSVP()
+  const elapsed=(Date.now()-rsvpStartTime)/1000
+  const mins=elapsed/60
+  const realWpm=Math.round(rsvpWords.length/(mins||1))
+  document.getElementById('rsvpTime').textContent=Math.round(elapsed)+'s'
+  document.getElementById('rsvpRealWpm').textContent=realWpm
+  rsvpStats.sessions++;rsvpStats.words+=rsvpWords.length;rsvpStats.minutes+=mins
+  if(realWpm>rsvpStats.bestWpm)rsvpStats.bestWpm=realWpm
+  LS.set('sm_rsvpStats',rsvpStats);updateRSVPStatsUI()
+  sfxSuccess();toast('¡Lectura completada! '+realWpm+' WPM')
+  addXP(20)
+}
+function updateRSVPStatsUI(){
+  document.getElementById('rsvpStatSessions').textContent=rsvpStats.sessions
+  document.getElementById('rsvpStatWords').textContent=rsvpStats.words
+  document.getElementById('rsvpStatTime').textContent=Math.round(rsvpStats.minutes)
+  document.getElementById('rsvpStatBest').textContent=rsvpStats.bestWpm
+}
+
+// ===== MEMORY PALACE =====
+let editingRoomId=null,reviewQueue=[],reviewIdx=0;
+function switchPalaceTab(t){
+  document.querySelectorAll('#palaceScreen .tab').forEach(x=>x.classList.remove('active'))
+  event.target.classList.add('active')
+  document.getElementById('palaceRoomsTab').style.display=t==='rooms'?'block':'none'
+  document.getElementById('palaceReviewTab').style.display=t==='review'?'block':'none'
+  closeRoomEditor()
+}
+function renderPalace(){
+  const g=document.getElementById('palaceGrid')
+  g.innerHTML=palace.map((r,i)=>'<div class="room" onclick="openRoomEditor('+r.id+')"><span class="room-num">'+(i+1)+'</span><div class="room-name">'+escapeHtml(r.name)+'</div><div class="room-items">'+r.items.length+' objetos</div></div>').join('')
+}
+function escapeHtml(t){return t.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function addRoom(){
+  const id=Date.now();palace.push({id:id,name:'Nueva',items:[]});
+  LS.set('sm_palace',palace);renderPalace();openRoomEditor(id);
+}
+function resetPalace(){palace=defaultPalace();LS.set('sm_palace',palace);renderPalace();toast('Palacio restaurado')}
+function openRoomEditor(id){
+  editingRoomId=id;const r=palace.find(x=>x.id===id)
+  if(!r)return
+  document.getElementById('roomEditorTitle').textContent='Editar: '+r.name
+  document.getElementById('roomName').value=r.name
+  document.getElementById('roomItems').value=r.items.join('\n')
+  document.getElementById('roomEditor').style.display='block'
+}
+function closeRoomEditor(){document.getElementById('roomEditor').style.display='none';editingRoomId=null}
+function saveRoom(){
+  if(!editingRoomId)return
+  const r=palace.find(x=>x.id===editingRoomId)
+  r.name=document.getElementById('roomName').value.trim()||'Sin nombre'
+  r.items=document.getElementById('roomItems').value.split('\n').map(s=>s.trim()).filter(s=>s)
+  LS.set('sm_palace',palace);renderPalace();closeRoomEditor();toast('Guardado')
+}
+function deleteRoom(){
+  if(!editingRoomId||!confirm('¿Borrar esta habitación?'))return
+  palace=palace.filter(x=>x.id!==editingRoomId);LS.set('sm_palace',palace);renderPalace();closeRoomEditor();toast('Eliminada')
+}
+function startPalaceReview(){
+  reviewQueue=[];
+  palace.forEach(r=>r.items.forEach(it=>reviewQueue.push({room:r.name,item:it})))
+  if(reviewQueue.length===0){toast('No hay objetos en el palacio');return}
+  reviewQueue.sort(()=>Math.random()-.5);reviewIdx=0;
+  document.getElementById('palaceReviewA').style.display='none'
+  showPalaceReviewQ()
+}
+function showPalaceReviewQ(){
+  if(reviewIdx>=reviewQueue.length){document.getElementById('palaceReviewQ').textContent='🎉 ¡Repaso completado!';document.getElementById('palaceReviewA').style.display='none';addXP(15);sfxSuccess();return}
+  const q=reviewQueue[reviewIdx]
+  document.getElementById('palaceReviewQ').textContent='¿Dónde está "'+q.item+'"?'
+  document.getElementById('palaceReviewA').textContent='En '+q.room;document.getElementById('palaceReviewA').style.display='none'
+}
+function showPalaceAnswer(){document.getElementById('palaceReviewA').style.display='block'}
+function palaceCorrect(){sfxSuccess();reviewIdx++;showPalaceReviewQ()}
+function palaceWrong(){sfxFail();reviewIdx++;showPalaceReviewQ()}
 
 // ===== FLASHCARDS SM-2 =====
 function switchTab(t){
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'))
+  document.querySelectorAll('#flashScreen .tab').forEach(x=>x.classList.remove('active'))
   event.target.classList.add('active')
   document.getElementById('studyTab').style.display=t==='study'?'block':'none'
   document.getElementById('manageTab').style.display=t==='manage'?'block':'none'
   if(t==='study')prepareStudy()
   if(t==='manage')renderCardList()
 }
-
 function prepareStudy(){
   const now=Date.now()
   const due=cards.filter(c=>!c.due||c.due<=now).sort((a,b)=>((a.due||0)-(b.due||0)))
-  const el=document.getElementById('fcard')
-  const rating=document.getElementById('ratingBox')
-  const empty=document.getElementById('studyEmpty')
+  const el=document.getElementById('fcard'),rating=document.getElementById('ratingBox'),empty=document.getElementById('studyEmpty')
   el.classList.remove('flipped')
-  if(due.length===0){
-    el.style.display='none';rating.style.display='none';empty.style.display='block'
-    return
-  }
+  if(due.length===0){el.style.display='none';rating.style.display='none';empty.style.display='block';return}
   el.style.display='flex';rating.style.display='grid';empty.style.display='none'
   currentCard=due[0]
   document.getElementById('fcFront').textContent=currentCard.front
   document.getElementById('fcBack').textContent=currentCard.back
 }
-function flipCard(){
-  if(!currentCard)return
-  document.getElementById('fcard').classList.toggle('flipped')
-}
+function flipCard(){if(!currentCard)return;document.getElementById('fcard').classList.toggle('flipped')}
 function rate(q){
-  if(!currentCard)return
-  const c=currentCard
-  c.reps=(c.reps||0)+1
-  c.ef=(c.ef||2.5)
+  if(!currentCard)return;const c=currentCard;
+  c.reps=(c.reps||0)+1;c.ef=(c.ef||2.5)
   if(q<3){c.interval=1;c.ef=Math.max(1.3,c.ef-0.8)}
-  else{
-    c.interval=c.reps===1?1:c.reps===2?6:Math.round((c.interval||1)*c.ef)
-    c.ef=c.ef+(0.1-(5-q)*(0.08+(5-q)*0.02))
-    c.ef=Math.max(1.3,c.ef)
-  }
+  else{c.interval=c.reps===1?1:c.reps===2?6:Math.round((c.interval||1)*c.ef);c.ef=c.ef+(0.1-(5-q)*(0.08+(5-q)*0.02));c.ef=Math.max(1.3,c.ef)}
   c.due=Date.now()+c.interval*86400000
-  saveCards()
-  sessionReviews++
-  addXP(10)
-  checkStreak()
-  document.getElementById('fcard').classList.remove('flipped')
-  setTimeout(prepareStudy,200)
+  saveCards();sessionReviews++;addXP(10);sfxClick();checkStreak()
+  document.getElementById('fcard').classList.remove('flipped');setTimeout(prepareStudy,200)
 }
-
-// ===== MANAGE =====
 function addCard(){
-  const f=document.getElementById('inFront').value.trim()
-  const b=document.getElementById('inBack').value.trim()
+  const f=document.getElementById('inFront').value.trim(),b=document.getElementById('inBack').value.trim()
   if(!f||!b){toast('Completá ambos campos');return}
   cards.push({id:Date.now(),front:f,back:b,reps:0,ef:2.5,interval:0,due:Date.now()})
-  saveCards()
-  document.getElementById('inFront').value=''
-  document.getElementById('inBack').value=''
-  renderCardList()
-  toast('Tarjeta agregada')
+  saveCards();document.getElementById('inFront').value='';document.getElementById('inBack').value='';renderCardList();sfxSuccess();toast('Agregada')
 }
 function renderCardList(){
   const el=document.getElementById('cardList')
   if(cards.length===0){el.innerHTML='<p class="empty">Sin tarjetas</p>';return}
-  el.innerHTML=cards.map(c=>'<div class="list-item"><span>'+c.front+'</span><button onclick="delCard('+c.id+')">🗑️</button></div>').join('')
+  el.innerHTML=cards.map(c=>'<div class="list-item"><span>'+escapeHtml(c.front)+'</span><button onclick="delCard('+c.id+')">🗑️</button></div>').join('')
 }
 function delCard(id){cards=cards.filter(c=>c.id!==id);saveCards();renderCardList();toast('Eliminada')}
 function saveCards(){LS.set('sm_cards',cards)}
-function exportCards(){
-  const blob=new Blob([JSON.stringify(cards,null,2)],{type:'application/json'})
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='speedmind-cards.json';a.click()
-}
+function exportCards(){downloadJSON(cards,'speedmind-cards.json')}
 function importCards(input){
-  const file=input.files[0];if(!file)return
-  const reader=new FileReader()
-  reader.onload=e=>{try{const data=JSON.parse(e.target.result);if(Array.isArray(data)){cards=data;saveCards();renderCardList();toast('Importado: '+data.length+' tarjetas')}else{toast('JSON inválido')}}catch(err){toast('Error al leer JSON')}}
-  reader.readAsText(file)
-  input.value=''
+  const f=input.files[0];if(!f)return
+  const r=new FileReader()
+  r.onload=e=>{try{const d=JSON.parse(e.target.result);if(Array.isArray(d)){cards=d;saveCards();renderCardList();toast('Importado: '+d.length)}else{toast('JSON inválido')}}catch(err){toast('Error JSON')}}
+  r.readAsText(f);input.value=''
 }
 
 // ===== MAJOR SYSTEM =====
@@ -358,10 +600,54 @@ function convertMajor(){
   document.getElementById('majorResult').innerHTML='<span style="color:var(--muted);font-size:.9rem">'+num+'</span><br>'+sounds
 }
 
+// ===== COMPETITION =====
+let compRunning=false,compTimerInt=null,compStart=0,compQuestions=[],compQIdx=0;
+function updateCompBest(){
+  const b=profile.bestCompTime
+  document.getElementById('compBest').textContent=b?fmtTime(b):'--:--'
+}
+function fmtTime(ms){
+  const s=Math.floor(ms/1000),m=Math.floor(s/60),sec=s%60
+  return (m<10?'0':'')+m+':'+(sec<10?'0':'')+sec
+}
+function startCompetition(){
+  if(compRunning)return
+  compRunning=true;compQIdx=0;compStart=Date.now()
+  compQuestions=[]
+  for(let i=0;i<10;i++){
+    const num=Math.floor(Math.random()*9000)+1000
+    const snd=num.toString().split('').map(d=>majorMap[d]).join(' · ')
+    compQuestions.push({num:num,sound:snd})
+  }
+  document.getElementById('compBar').style.width='0%'
+  document.getElementById('compScore').textContent='Pregunta 1 de 10'
+  showCompQuestion()
+  compTimerInt=setInterval(()=>{
+    document.getElementById('compTimer').textContent=fmtTime(Date.now()-compStart)
+  },100)
+}
+function showCompQuestion(){
+  if(compQIdx>=compQuestions.length){finishCompetition();return}
+  const q=compQuestions[compQIdx]
+  document.getElementById('compScore').innerHTML='¿Qué número es?<br><span style="font-size:1.4rem;color:var(--accent)">'+q.sound+'</span><br><div class="btn-row" style="justify-content:center;margin-top:.5rem"><button class="btn" onclick="nextComp()">✅ Siguiente</button></div>'
+  document.getElementById('compBar').style.width=((compQIdx/10)*100)+'%'
+}
+function nextComp(){sfxClick();compQIdx++;showCompQuestion()}
+function stopCompetition(){compRunning=false;clearInterval(compTimerInt);document.getElementById('compScore').textContent='Cancelado';document.getElementById('compBar').style.width='0%'}
+function finishCompetition(){
+  compRunning=false;clearInterval(compTimerInt)
+  const total=Date.now()-compStart
+  document.getElementById('compTimer').textContent=fmtTime(total)
+  document.getElementById('compBar').style.width='100%'
+  const isBest=!profile.bestCompTime||total<profile.bestCompTime
+  if(isBest){profile.bestCompTime=total;saveProfile();updateCompBest();sfxLevel();toast('¡Nuevo récord! 🏆');addXP(50,true)}
+  else{sfxSuccess();toast('Completado en '+fmtTime(total));addXP(20)}
+  document.getElementById('compScore').textContent=isBest?'¡Nuevo récord!':'Completado'
+}
+
 // ===== DASHBOARD =====
 function updateDash(){
-  const now=Date.now()
-  const due=cards.filter(c=>!c.due||c.due<=now).length
+  const now=Date.now(),due=cards.filter(c=>!c.due||c.due<=now).length
   document.getElementById('dXP').textContent=profile.xp
   document.getElementById('dLevel').textContent=profile.level
   document.getElementById('dStreak').textContent=profile.streak
@@ -372,23 +658,28 @@ function updateDash(){
   if(profile.history.length===0){hl.innerHTML='<p class="empty">Sin sesiones aún</p>';return}
   hl.innerHTML=profile.history.slice(-10).reverse().map(h=>'<div class="list-item"><span>'+h.date+'</span><span>'+h.count+' reps · +'+h.xp+' XP</span></div>').join('')
 }
-function exportAll(){
-  const data={cards:cards,profile:profile,exportedAt:new Date().toISOString()}
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'})
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='speedmind-backup.json';a.click()
-}
+function exportAll(){downloadJSON({cards:cards,profile:profile,rsvpStats:rsvpStats,palace:palace,exportedAt:new Date().toISOString()},'speedmind-backup.json')}
 function importAll(input){
-  const file=input.files[0];if(!file)return
-  const reader=new FileReader()
-  reader.onload=e=>{try{const data=JSON.parse(e.target.result);if(data.cards){cards=data.cards;saveCards()}if(data.profile){profile=data.profile;saveProfile()}updateDash();toast('Datos restaurados')}
-catch(err){toast('Error al leer JSON')}}
-  reader.readAsText(file)
-  input.value=''
+  const f=input.files[0];if(!f)return
+  const r=new FileReader()
+  r.onload=e=>{try{const d=JSON.parse(e.target.result);if(d.cards){cards=d.cards;saveCards()}if(d.profile){profile=d.profile;saveProfile()}if(d.rsvpStats){rsvpStats=d.rsvpStats;LS.set('sm_rsvpStats',rsvpStats)}if(d.palace){palace=d.palace;LS.set('sm_palace',palace)}updateDash();updateRSVPStatsUI();renderPalace();toast('Datos restaurados')}catch(err){toast('Error JSON')}}
+  r.readAsText(f);input.value=''
 }
-function resetData(){if(!confirm('¿Borrar TODO? No se puede deshacer.'))return;localStorage.removeItem('sm_cards');localStorage.removeItem('sm_profile');location.reload()}
+function resetData(){if(!confirm('¿Borrar TODO?'))return;localStorage.removeItem('sm_cards');localStorage.removeItem('sm_profile');localStorage.removeItem('sm_rsvpStats');localStorage.removeItem('sm_palace');location.reload()}
 
 // ===== UTILS =====
+function downloadJSON(obj,filename){
+  const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'})
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;a.click()
+}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+
+// ===== PWA Service Worker =====
+if('serviceWorker' in navigator){
+  const swCode=`self.addEventListener('install',e=>{self.skipWaiting()});self.addEventListener('activate',e=>e.waitUntil(clients.claim()));self.addEventListener('fetch',e=>e.respondWith(fetch(e.request).catch(()=>new Response('Offline',{status:503}))))`;
+  const blob=new Blob([swCode],{type:'application/javascript'})
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{})
+}
 </script>
 </body>
 </html>
