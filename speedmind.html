@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SpeedMind</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif}
+  :root{--bg:#0d0d0d;--card:#1a1a1a;--accent:#3b82f6;--text:#e5e5e5;--muted:#888;--success:#22c55e;--danger:#ef4444;--warn:#f59e0b}
+  body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+  header{padding:1rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #222}
+  header h1{font-size:1.3rem;display:flex;align-items:center;gap:.5rem}
+  .badge{background:var(--accent);padding:.2rem .6rem;border-radius:999px;font-size:.75rem;font-weight:700}
+  .container{flex:1;padding:1rem;max-width:600px;width:100%;margin:0 auto}
+  .menu{display:grid;gap:.75rem;margin-top:1rem}
+  .menu-item{background:var(--card);border-radius:12px;padding:1rem;display:flex;align-items:center;gap:1rem;cursor:pointer;transition:.2s;border:1px solid #222}
+  .menu-item:hover{border-color:var(--accent)}
+  .menu-icon{font-size:1.5rem;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:#222;border-radius:10px}
+  .menu-text h3{font-size:1rem;margin-bottom:.15rem}
+  .menu-text p{font-size:.85rem;color:var(--muted)}
+  .screen{display:none}
+  .screen.active{display:block;animation:fade .3s}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  .btn{background:var(--accent);color:#fff;border:none;padding:.7rem 1.2rem;border-radius:8px;cursor:pointer;font-size:.95rem;font-weight:600;transition:.2s}
+  .btn:hover{opacity:.9}
+  .btn.secondary{background:#222;color:var(--text)}
+  .btn.danger{background:var(--danger)}
+  .btn.success{background:var(--success)}
+  .btn.warn{background:var(--warn);color:#000}
+  .btn-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem}
+  .card{background:var(--card);border-radius:12px;padding:1.2rem;border:1px solid #222;margin-top:1rem}
+  .flashcard{min-height:180px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:1.2rem;cursor:pointer;user-select:none;position:relative}
+  .flashcard .back{display:none;color:var(--muted);font-size:1rem;margin-top:.5rem}
+  .flashcard.flipped .front{display:none}
+  .flashcard.flipped .back{display:block}
+  .flashcard.flipped{background:#1e2a3a;border-color:var(--accent)}
+  .rating{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-top:1rem}
+  .rating button{padding:.6rem 0;border-radius:8px;border:none;cursor:pointer;font-weight:600;font-size:.8rem;color:#fff}
+  .rating .again{background:var(--danger)}
+  .rating .hard{background:var(--warn);color:#000}
+  .rating .good{background:var(--accent)}
+  .rating .easy{background:var(--success)}
+  input,textarea,select{background:#222;border:1px solid #333;color:var(--text);padding:.6rem;border-radius:8px;width:100%;font-size:.9rem;margin-top:.4rem}
+  label{font-size:.85rem;color:var(--muted);display:block;margin-top:.8rem}
+  .tabs{display:flex;gap:.5rem;margin-bottom:1rem;border-bottom:1px solid #222;padding-bottom:.5rem}
+  .tab{cursor:pointer;padding:.4rem .8rem;border-radius:6px;font-size:.85rem;color:var(--muted)}
+  .tab.active{background:#222;color:var(--text)}
+  .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;margin-top:1rem}
+  .stat{background:var(--card);padding:1rem;border-radius:10px;text-align:center;border:1px solid #222}
+  .stat-value{font-size:1.5rem;font-weight:700;color:var(--accent)}
+  .stat-label{font-size:.75rem;color:var(--muted);margin-top:.2rem}
+  .list-item{background:var(--card);padding:.8rem;border-radius:8px;margin-top:.5rem;display:flex;justify-content:space-between;align-items:center;border:1px solid #222}
+  .list-item button{background:none;border:none;color:var(--danger);cursor:pointer;font-size:1rem}
+  .empty{text-align:center;color:var(--muted);padding:2rem}
+  .back-btn{background:none;border:none;color:var(--accent);cursor:pointer;font-size:.9rem;display:flex;align-items:center;gap:.3rem;margin-bottom:1rem}
+  .progress-bar{height:6px;background:#222;border-radius:3px;overflow:hidden;margin-top:.5rem}
+  .progress-bar>div{height:100%;background:var(--accent);transition:width .3s}
+  .toast{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid #333;padding:.8rem 1.2rem;border-radius:8px;font-size:.9rem;z-index:100;opacity:0;transition:.3s;pointer-events:none}
+  .toast.show{opacity:1}
+  .level-badge{background:linear-gradient(135deg,var(--accent),#8b5cf6);padding:.3rem .8rem;border-radius:999px;font-size:.8rem;font-weight:700}
+  .xp-bar{flex:1;height:8px;background:#222;border-radius:4px;overflow:hidden;margin:0 .5rem}
+  .xp-bar>div{height:100%;background:linear-gradient(90deg,var(--accent),#8b5cf6);transition:width .3s}
+  .top-bar{display:flex;align-items:center;gap:.5rem;margin-bottom:1rem}
+  .hidden{display:none!important}
+  .major-table{display:grid;grid-template-columns:repeat(5,1fr);gap:.4rem;margin-top:1rem}
+  .major-cell{background:var(--card);padding:.5rem;text-align:center;border-radius:6px;font-size:.85rem;border:1px solid #222}
+  .major-cell .num{color:var(--accent);font-weight:700}
+  .major-input{font-size:1.2rem;text-align:center;letter-spacing:.2rem}
+  .result-box{background:#222;padding:1rem;border-radius:8px;margin-top:1rem;font-size:1.1rem;text-align:center;min-height:3rem;display:flex;align-items:center;justify-content:center}
+  .streak{color:var(--warn);display:flex;align-items:center;gap:.3rem}
+  #fileInput{display:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧠 SpeedMind <span class="badge" id="levelBadge">Nivel 1</span></h1>
+  <div style="display:flex;align-items:center;gap:.5rem;font-size:.85rem">
+    <span class="streak">🔥 <span id="streakVal">0</span></span>
+    <div class="xp-bar"><div id="xpFill" style="width:0%"></div></div>
+    <span id="xpText">0/100 XP</span>
+  </div>
+</header>
+
+<div class="container">
+  <!-- HOME -->
+  <div id="homeScreen" class="screen active">
+    <div class="menu">
+      <div class="menu-item" onclick="go('flash')">
+        <div class="menu-icon">🎴</div>
+        <div class="menu-text"><h3>Flashcards SM-2</h3><p>Algoritmo real de repetición espaciada</p></div>
+      </div>
+      <div class="menu-item" onclick="go('major')">
+        <div class="menu-icon">🔢</div>
+        <div class="menu-text"><h3>Major System</h3><p>Convertidor número → mnemotécnica</p></div>
+      </div>
+      <div class="menu-item" onclick="go('dash')">
+        <div class="menu-icon">📊</div>
+        <div class="menu-text"><h3>Dashboard</h3><p>XP, niveles, rachas, historial, importar JSON</p></div>
+      </div>
+      <div class="menu-item" onclick="go('about')">
+        <div class="menu-icon">💾</div>
+        <div class="menu-text"><h3>100% offline</h3><p>Todo en localStorage. Sin costo.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLASHCARDS -->
+  <div id="flashScreen" class="screen">
+    <button class="back-btn" onclick="go('home')">← Volver</button>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('study')">Estudiar</div>
+      <div class="tab" onclick="switchTab('manage')">Gestionar</div>
+    </div>
+    <div id="studyTab">
+      <div id="studyArea">
+        <div class="card flashcard" id="fcard" onclick="flipCard()">
+          <div class="front" id="fcFront">No hay tarjetas para repasar</div>
+          <div class="back" id="fcBack"></div>
+        </div>
+        <div class="rating" id="ratingBox" style="display:none">
+          <button class="again" onclick="rate(0)">Otra vez<br><small>&lt;1m</small></button>
+          <button class="hard" onclick="rate(3)">Difícil<br><small>2d</small></button>
+          <button class="good" onclick="rate(4)">Bien<br><small>4d</small></button>
+          <button class="easy" onclick="rate(5)">Fácil<br><small>7d</small></button>
+        </div>
+        <div id="studyEmpty" class="empty" style="display:none">
+          <p>🎉 ¡No hay tarjetas pendientes!</p>
+          <button class="btn" onclick="switchTab('manage')" style="margin-top:1rem">Agregar tarjetas</button>
+        </div>
+      </div>
+    </div>
+    <div id="manageTab" style="display:none">
+      <label>Frontal (pregunta)</label>
+      <input id="inFront" placeholder="¿Qué significa...?">
+      <label>Reverso (respuesta)</label>
+      <textarea id="inBack" rows="3" placeholder="Respuesta..."></textarea>
+      <div class="btn-row">
+        <button class="btn" onclick="addCard()">➕ Agregar</button>
+        <button class="btn secondary" onclick="exportCards()">📤 Exportar JSON</button>
+        <button class="btn secondary" onclick="document.getElementById('fileInput').click()">📥 Importar JSON</button>
+        <input type="file" id="fileInput" accept=".json" onchange="importCards(this)">
+      </div>
+      <div id="cardList" style="margin-top:1rem"></div>
+    </div>
+  </div>
+
+  <!-- MAJOR SYSTEM -->
+  <div id="majorScreen" class="screen">
+    <button class="back-btn" onclick="go('home')">← Volver</button>
+    <h2 style="margin-bottom:.5rem">🔢 Major System</h2>
+    <p style="color:var(--muted);font-size:.9rem">Convertí números en palabras mnemotécnicas</p>
+    <div class="major-table">
+      <div class="major-cell"><span class="num">0</span><br>s,z</div>
+      <div class="major-cell"><span class="num">1</span><br>t,d</div>
+      <div class="major-cell"><span class="num">2</span><br>n</div>
+      <div class="major-cell"><span class="num">3</span><br>m</div>
+      <div class="major-cell"><span class="num">4</span><br>r</div>
+      <div class="major-cell"><span class="num">5</span><br>l</div>
+      <div class="major-cell"><span class="num">6</span><br>j,ch,sh</div>
+      <div class="major-cell"><span class="num">7</span><br>k,g</div>
+      <div class="major-cell"><span class="num">8</span><br>f,v</div>
+      <div class="major-cell"><span class="num">9</span><br>p,b</div>
+    </div>
+    <label style="margin-top:1rem">Ingresá un número</label>
+    <input id="majorNum" class="major-input" placeholder="314159" oninput="convertMajor()">
+    <div class="result-box" id="majorResult">—</div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashScreen" class="screen">
+    <button class="back-btn" onclick="go('home')">← Volver</button>
+    <h2 style="margin-bottom:.5rem">📊 Dashboard</h2>
+    <div class="stat-grid">
+      <div class="stat"><div class="stat-value" id="dXP">0</div><div class="stat-label">XP Total</div></div>
+      <div class="stat"><div class="stat-value" id="dLevel">1</div><div class="stat-label">Nivel</div></div>
+      <div class="stat"><div class="stat-value" id="dStreak">0</div><div class="stat-label">Racha (días)</div></div>
+      <div class="stat"><div class="stat-value" id="dCards">0</div><div class="stat-label">Tarjetas</div></div>
+      <div class="stat"><div class="stat-value" id="dReviewed">0</div><div class="stat-label">Repasadas hoy</div></div>
+      <div class="stat"><div class="stat-value" id="dDue">0</div><div class="stat-label">Pendientes</div></div>
+    </div>
+    <div class="card" style="margin-top:1rem">
+      <h3 style="margin-bottom:.5rem">Historial de sesiones</h3>
+      <div id="historyList"><p class="empty">Sin sesiones aún</p></div>
+    </div>
+    <div class="btn-row" style="margin-top:1rem">
+      <button class="btn secondary" onclick="exportAll()">💾 Exportar todo (JSON)</button>
+      <button class="btn secondary" onclick="document.getElementById('fileInput2').click()">📥 Importar todo (JSON)</button>
+      <input type="file" id="fileInput2" accept=".json" style="display:none" onchange="importAll(this)">
+      <button class="btn danger" onclick="resetData()">🗑️ Resetear todo</button>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <div id="aboutScreen" class="screen">
+    <button class="back-btn" onclick="go('home')">← Volver</button>
+    <div class="card" style="text-align:center">
+      <h2>🧠 SpeedMind</h2>
+      <p style="color:var(--muted);margin-top:.5rem">100% offline. Todo se guarda en tu navegador mediante localStorage.</p>
+      <p style="color:var(--muted);font-size:.85rem;margin-top:.5rem">Sin servidores, sin cuentas, sin costo.</p>
+      <p style="color:var(--muted);font-size:.85rem;margin-top:.5rem">Algoritmo SM-2 para repetición espaciada.</p>
+      <p style="color:var(--muted);font-size:.85rem;margin-top:.5rem">Major System integrado.</p>
+      <div style="margin-top:1.5rem">
+        <p style="font-size:.9rem">Para subir a GitHub Pages:</p>
+        <ol style="text-align:left;color:var(--muted);font-size:.85rem;margin-top:.5rem;padding-left:1.2rem;line-height:1.6">
+          <li>Creá un repositorio en GitHub</li>
+          <li>Subí este archivo <code>speedmind.html</code></li>
+          <li>Andá a Settings → Pages → Branch: main → / (root)</li>
+          <li>Guardá y esperá 1 minuto. ¡Listo!</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== DATA =====
+const LS={get:k=>JSON.parse(localStorage.getItem(k)||'null'),set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))}
+let cards=LS.get('sm_cards')||[]
+let profile=LS.get('sm_profile')||{xp:0,level:1,streak:0,lastStudyDate:null,studyDates:[],history:[]}
+let sessionReviews=0
+let currentCard=null
+
+// ===== INIT =====
+function init(){
+  updateProfileUI()
+  renderCardList()
+  updateDash()
+}
+init()
+
+// ===== NAV =====
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'))
+  document.getElementById(id+'Screen').classList.add('active')
+  if(id==='flash'){prepareStudy()}
+  if(id==='dash'){updateDash()}
+}
+
+// ===== PROFILE =====
+function addXP(n){
+  profile.xp+=n
+  const need=profile.level*100
+  if(profile.xp>=need){profile.xp-=need;profile.level++;toast('¡Subiste de nivel! 🎉')}
+  saveProfile()
+  updateProfileUI()
+}
+function saveProfile(){LS.set('sm_profile',profile)}
+function updateProfileUI(){
+  document.getElementById('levelBadge').textContent='Nivel '+profile.level
+  document.getElementById('streakVal').textContent=profile.streak
+  const need=profile.level*100
+  const pct=Math.min(100,(profile.xp/need)*100)
+  document.getElementById('xpFill').style.width=pct+'%'
+  document.getElementById('xpText').textContent=profile.xp+'/'+need+' XP'
+}
+function checkStreak(){
+  const today=new Date().toDateString()
+  if(profile.lastStudyDate&&profile.lastStudyDate!==today){
+    const yesterday=new Date();yesterday.setDate(yesterday.getDate()-1)
+    if(profile.lastStudyDate===yesterday.toDateString()){profile.streak++}
+    else{profile.streak=1}
+  }
+  profile.lastStudyDate=today
+  if(!profile.studyDates.includes(today))profile.studyDates.push(today)
+  saveProfile()
+  updateProfileUI()
+}
+
+// ===== FLASHCARDS SM-2 =====
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'))
+  event.target.classList.add('active')
+  document.getElementById('studyTab').style.display=t==='study'?'block':'none'
+  document.getElementById('manageTab').style.display=t==='manage'?'block':'none'
+  if(t==='study')prepareStudy()
+  if(t==='manage')renderCardList()
+}
+
+function prepareStudy(){
+  const now=Date.now()
+  const due=cards.filter(c=>!c.due||c.due<=now).sort((a,b)=>((a.due||0)-(b.due||0)))
+  const el=document.getElementById('fcard')
+  const rating=document.getElementById('ratingBox')
+  const empty=document.getElementById('studyEmpty')
+  el.classList.remove('flipped')
+  if(due.length===0){
+    el.style.display='none';rating.style.display='none';empty.style.display='block'
+    return
+  }
+  el.style.display='flex';rating.style.display='grid';empty.style.display='none'
+  currentCard=due[0]
+  document.getElementById('fcFront').textContent=currentCard.front
+  document.getElementById('fcBack').textContent=currentCard.back
+}
+function flipCard(){
+  if(!currentCard)return
+  document.getElementById('fcard').classList.toggle('flipped')
+}
+function rate(q){
+  if(!currentCard)return
+  const c=currentCard
+  c.reps=(c.reps||0)+1
+  c.ef=(c.ef||2.5)
+  if(q<3){c.interval=1;c.ef=Math.max(1.3,c.ef-0.8)}
+  else{
+    c.interval=c.reps===1?1:c.reps===2?6:Math.round((c.interval||1)*c.ef)
+    c.ef=c.ef+(0.1-(5-q)*(0.08+(5-q)*0.02))
+    c.ef=Math.max(1.3,c.ef)
+  }
+  c.due=Date.now()+c.interval*86400000
+  saveCards()
+  sessionReviews++
+  addXP(10)
+  checkStreak()
+  document.getElementById('fcard').classList.remove('flipped')
+  setTimeout(prepareStudy,200)
+}
+
+// ===== MANAGE =====
+function addCard(){
+  const f=document.getElementById('inFront').value.trim()
+  const b=document.getElementById('inBack').value.trim()
+  if(!f||!b){toast('Completá ambos campos');return}
+  cards.push({id:Date.now(),front:f,back:b,reps:0,ef:2.5,interval:0,due:Date.now()})
+  saveCards()
+  document.getElementById('inFront').value=''
+  document.getElementById('inBack').value=''
+  renderCardList()
+  toast('Tarjeta agregada')
+}
+function renderCardList(){
+  const el=document.getElementById('cardList')
+  if(cards.length===0){el.innerHTML='<p class="empty">Sin tarjetas</p>';return}
+  el.innerHTML=cards.map(c=>\`<div class="list-item"><span>\${c.front}</span><button onclick="delCard(\${c.id})">🗑️</button></div>\`).join('')
+}
+function delCard(id){cards=cards.filter(c=>c.id!==id);saveCards();renderCardList();toast('Eliminada')}
+function saveCards(){LS.set('sm_cards',cards)}
+function exportCards(){
+  const blob=new Blob([JSON.stringify(cards,null,2)],{type:'application/json'})
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='speedmind-cards.json';a.click()
+}
+function importCards(input){
+  const file=input.files[0];if(!file)return
+  const reader=new FileReader()
+  reader.onload=e=>{try{const data=JSON.parse(e.target.result);if(Array.isArray(data)){cards=data;saveCards();renderCardList();toast('Importado: '+data.length+' tarjetas')}else{toast('JSON inválido')}}catch(err){toast('Error al leer JSON')}}
+  reader.readAsText(file)
+  input.value=''
+}
+
+// ===== MAJOR SYSTEM =====
+const majorMap={'0':'s,z','1':'t,d','2':'n','3':'m','4':'r','5':'l','6':'j,ch,sh','7':'k,g','8':'f,v','9':'p,b'}
+function convertMajor(){
+  const num=document.getElementById('majorNum').value.replace(/\D/g,'')
+  if(!num){document.getElementById('majorResult').textContent='—';return}
+  const sounds=num.split('').map(d=>majorMap[d]||'?').join(' · ')
+  document.getElementById('majorResult').innerHTML=\`<span style="color:var(--muted);font-size:.9rem">\${num}</span><br>\${sounds}\`
+}
+
+// ===== DASHBOARD =====
+function updateDash(){
+  const now=Date.now()
+  const due=cards.filter(c=>!c.due||c.due<=now).length
+  document.getElementById('dXP').textContent=profile.xp
+  document.getElementById('dLevel').textContent=profile.level
+  document.getElementById('dStreak').textContent=profile.streak
+  document.getElementById('dCards').textContent=cards.length
+  document.getElementById('dReviewed').textContent=sessionReviews
+  document.getElementById('dDue').textContent=due
+  const hl=document.getElementById('historyList')
+  if(profile.history.length===0){hl.innerHTML='<p class="empty">Sin sesiones aún</p>';return}
+  hl.innerHTML=profile.history.slice(-10).reverse().map(h=>\`<div class="list-item"><span>\${h.date}</span><span>\${h.count} reps · +\${h.xp} XP</span></div>\`).join('')
+}
+function exportAll(){
+  const data={cards:cards,profile:profile,exportedAt:new Date().toISOString()}
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'})
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='speedmind-backup.json';a.click()
+}
+function importAll(input){
+  const file=input.files[0];if(!file)return
+  const reader=new FileReader()
+  reader.onload=e=>{try{const data=JSON.parse(e.target.result);if(data.cards){cards=data.cards;saveCards()}if(data.profile){profile=data.profile;saveProfile()}updateDash();toast('Datos restaurados')
+}catch(err){toast('Error al leer JSON')}}
+  reader.readAsText(file)
+  input.value=''
+}
+function resetData(){if(!confirm('¿Borrar TODO? No se puede deshacer.'))return;localStorage.removeItem('sm_cards');localStorage.removeItem('sm_profile');location.reload()}
+
+// ===== UTILS =====
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+</script>
+</body>
+</html>
